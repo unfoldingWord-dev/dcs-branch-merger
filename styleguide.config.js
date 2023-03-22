@@ -10,25 +10,25 @@ let sections = [
 		content: 'README.md',
 	},
 	{
-		name: 'TSV String to Table',
-		content: 'src/core/TsvStringToTable.md',
+		name: 'Check merge of Master into User branch',
+		content: 'src/core/CheckMergeMasterIntoUserBranch.md',
 	},
-	{
-		name: 'TSV String to Table with Errors',
-		content: 'src/core/TsvStringToTableWithErrors.md',
-	},
-	{
-		name: 'Table to TSV String',
-		content: 'src/core/TableToTsvString.md',
-	},
-	{
-		name: 'Table to TSV String with Errors',
-		content: 'src/core/TableToTsvStringWithErrors.md',
-	},
-	{
-		name: 'Round Trip Example',
-		content: 'src/core/RoundTrip.md',
-	},
+	// {
+	// 	name: 'TSV String to Table with Errors',
+	// 	content: 'src/core/TsvStringToTableWithErrors.md',
+	// },
+	// {
+	// 	name: 'Table to TSV String',
+	// 	content: 'src/core/TableToTsvString.md',
+	// },
+	// {
+	// 	name: 'Table to TSV String with Errors',
+	// 	content: 'src/core/TableToTsvStringWithErrors.md',
+	// },
+	// {
+	// 	name: 'Round Trip Example',
+	// 	content: 'src/core/RoundTrip.md',
+	// },
 
 ];
 
