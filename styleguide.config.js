@@ -10,8 +10,8 @@ let sections = [
 		content: 'README.md',
 	},
 	{
-		name: 'Check merge of Master into User branch',
-		content: 'src/core/CheckMergeMasterIntoUserBranch.md',
+		name: 'Check merge of Defalt into User branch',
+		content: 'src/core/CheckMergeDefaultIntoUserBranch.md',
 	},
 	// {
 	// 	name: 'TSV String to Table with Errors',

@@ -2,7 +2,7 @@ This demo is a test.
 
 ```js
 import {useState, useEffect} from 'react';
-import { checkMergeMasterIntoUserBranch } from './checkMergeMasterIntoUserBranch.js';
+import { checkMergeDefaultIntoUserBranch } from './checkMergeDefaultIntoUserBranch.js';
 
 function Component() {
   const server = "qa.door43.org"
@@ -16,8 +16,8 @@ function Component() {
 
   useEffect( () => {
     const doCheck = async () => {
-      const _results = await checkMergeMasterIntoUserBranch(
-        server, owner, repo, userName, userBranch, tokenid,
+      const _results = await checkMergeDefaultIntoUserBranch(
+        {server, owner, repo, userName, userBranch, tokenid}
       );
       setResults(_results)
     }
@@ -38,7 +38,7 @@ function Component() {
 
   return (
   <>
-  <pre>{results}</pre>
+  <pre>{JSON.stringify(results,null,4)}</pre>
   </>
   )
 }
