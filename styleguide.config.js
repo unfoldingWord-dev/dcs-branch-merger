@@ -10,7 +10,7 @@ let sections = [
 		content: 'README.md',
 	},
 	{
-		name: 'Check merge of Defalt into User branch',
+		name: 'Check merge of Default into User branch',
 		content: 'src/core/CheckMergeDefaultIntoUserBranch.md',
 	},
 	// {

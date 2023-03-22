@@ -13,6 +13,7 @@ export async function checkMergeDefaultIntoUserBranch({
   const dateString = date.toISOString()
   const uri = "https://" + server + '/' + Path.join(apiPath,'repos',owner,repo,'pulls')
   let pr_json = {};
+  let returnObject = { syncNeeded: false, conflict: false, message: "" };
   try {
     let res = await fetch(uri+'?token='+tokenid, {
       method: 'POST',
@@ -49,16 +50,39 @@ export async function checkMergeDefaultIntoUserBranch({
       // base_branch: master]"
       const pr_id = msg.split("issue_id: ")[1].split(",")[0]
       console.log("pr_id:", pr_id)
-      pr_json = getPrJson( { server, owner, repo, prId: pr_id })
+      pr_json = await getPrJson( { server, owner, repo, prId: pr_id })
     }
 
     // now interpret the JSON and return the values
-
-
+    // the attributes needed...
+    console.log("pj_json:",pr_json);
+    const mergeable = pr_json.mergeable;
+    const headSha = pr_json.head.sha;
+    const baseSha = pr_json.base.sha;
+    const mergeable_base = pr_json.mergeable_base;
+    // template return
+    // case 1
+    if ( mergeable ) {
+      returnObject.conflict = false;
+      if ( headSha === baseSha && baseSha === mergeable_base ) {
+        returnObject.syncNeeded = false
+      } else if ( headSha !== baseSha && headSha === mergeable_base ) {
+        returnObject.syncNeeded = false
+      } else if ( headSha !== baseSha && baseSha === mergeable_base ) {
+        returnObject.syncNeeded = true
+      } else if ( headSha === baseSha && baseSha !== mergeable_base ) {
+        returnObject.syncNeeded = true
+      } else if ( headSha !== mergeable_base && baseSha !== mergeable_base ) {
+        returnObject.syncNeeded = true
+     }
+    } else {
+      returnObject.conflict = true;
+    }
+{}
   } catch (e) {
     console.log("e:",e)
   }
 
-  return pr_json
+  return returnObject;
 }
 
