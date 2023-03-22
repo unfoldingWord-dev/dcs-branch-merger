@@ -1,4 +1,5 @@
 import Path from 'path'
+import { getPrJson } from './common'
 import { apiPath } from './constants'
 
 /*
@@ -11,9 +12,9 @@ export async function checkMergeDefaultIntoUserBranch({
   const date = new Date(Date.now())
   const dateString = date.toISOString()
   const uri = "https://" + server + '/' + Path.join(apiPath,'repos',owner,repo,'pulls')
-  let res = {}
+  let pr_json = {};
   try {
-    res = await fetch(uri+'?token='+tokenid, {
+    let res = await fetch(uri+'?token='+tokenid, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: `{
@@ -32,7 +33,7 @@ export async function checkMergeDefaultIntoUserBranch({
         "title": "${userBranch}"
       }`,
     })
-    const pr_json = await res.json()
+    pr_json = await res.json()
     if ( res.status === 409 ) {
       // then the body.message will contain the pr number
       const msg = pr_json.message
@@ -48,15 +49,16 @@ export async function checkMergeDefaultIntoUserBranch({
       // base_branch: master]"
       const pr_id = msg.split("issue_id: ")[1].split(",")[0]
       console.log("pr_id:", pr_id)
-      // now that we have the PR, get the JSON data for it
-      // example: https://qa.door43.org/api/v1/repos/unfoldingword/en_ult/pulls/3358
-      const uri = "https://" + server + '/' + Path.join(apiPath,'repos',owner,repo,'pulls')
-
+      pr_json = getPrJson( { server, owner, repo, prId: pr_id })
     }
+
+    // now interpret the JSON and return the values
+
+
   } catch (e) {
     console.log("e:",e)
   }
 
-  return res
+  return pr_json
 }
 
