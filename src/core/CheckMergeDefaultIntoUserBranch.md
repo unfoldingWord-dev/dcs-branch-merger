@@ -1,4 +1,4 @@
-This demo is a test of checking for a merge of the default branch into the user branch.
+This demo is a test of checking for an update of the user branch from master.
 You must supply values server, owner, repo, userName, userBranch, and tokenid.
 
 ```js
@@ -8,9 +8,9 @@ import { checkMergeDefaultIntoUserBranch } from './checkMergeDefaultIntoUserBran
 function Component() {
   const server = "qa.door43.org"
   const owner = "unfoldingWord"
-  const repo = "en_tn"
-  const userName = "richmahn"
-  const userBranch = "richmahn-tc-create-1"
+  const repo = "en_ult"
+  const userName = "cecil.new"
+  const userBranch = "gt-RUT-cecil.new"
   const tokenid = ""
 
   const [results, setResults] = useState(null)
