@@ -21,6 +21,10 @@ let sections = [
 		name: 'Update user branch from master',
 		content: 'src/core/updatePullRequest.md',
 	},
+	{
+		name: 'Merge user branch to master',
+		content: 'src/core/mergePullRequest.md',
+	},
 ];
 
 module.exports = {

@@ -10,7 +10,13 @@ import { apiPath } from './constants'
 export async function checkMergeUserIntoDefaultBranch({
   server, owner, repo, userName, userBranch, tokenid,
 }) {
-  let returnObject = { syncNeeded: false, conflict: false, message: "", pr: "", status: "" };
+  let returnObject = { syncNeeded: false, 
+    conflict: false, 
+    message: "", 
+    pr: "", 
+    status: "",
+    head: "",
+  };
   let defaultBranch = "master";
 
   let res = await getRepoJson( { server, owner, repo })
@@ -72,6 +78,7 @@ export async function checkMergeUserIntoDefaultBranch({
     const mergeable_base = pr_json.mergeable_base;
 
     returnObject.pr = pr_id;
+    returnObject.head = headSha;
     if ( mergeable ) {
       returnObject.conflict = false;
       if ( headSha === baseSha && baseSha === mergeable_base ) {
