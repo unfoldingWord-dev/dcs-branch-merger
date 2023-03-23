@@ -2,7 +2,7 @@
 A package for merging branches with the DCS API.
 
 
-Demo: https://unfoldingword-dev.github.io/dcs-branch-merger/
+Demo: https://unfoldingword.github.io/dcs-branch-merger/
 
 To run locally:
 
