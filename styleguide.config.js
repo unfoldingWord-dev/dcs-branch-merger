@@ -17,6 +17,10 @@ let sections = [
 		name: 'Check merge of User branch into Default branch',
 		content: 'src/core/CheckMergeUserIntoDefaultBranch.md',
 	},
+	{
+		name: 'Update user branch from master',
+		content: 'src/core/updatePullRequest.md',
+	},
 ];
 
 module.exports = {
