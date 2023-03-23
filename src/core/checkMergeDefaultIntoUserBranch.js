@@ -10,7 +10,7 @@ import { apiPath } from './constants'
 export async function checkMergeDefaultIntoUserBranch({
   server, owner, repo, userName, userBranch, tokenid,
 }) {
-  let returnObject = { syncNeeded: false, conflict: false, message: "" };
+  let returnObject = { syncNeeded: false, conflict: false, message: "", pr: "" };
   let defaultBranch = "master";
 
   let res = await getRepoJson( { server, owner, repo })
@@ -34,6 +34,7 @@ export async function checkMergeDefaultIntoUserBranch({
         "title": "Merge ${defaultBranch} into ${userBranch} by ${userName}"
       }`,
     })
+    let pr_id = "";
     pr_json = await res.json()
     if ( res.status === 409 ) {
       // then the body.message will contain the pr number
@@ -48,12 +49,14 @@ export async function checkMergeDefaultIntoUserBranch({
       // base_repo_id: 11419, 
       // head_branch: gt-RUT-cecil.new, 
       // base_branch: master]"
-      const pr_id = msg.split("issue_id: ")[1].split(",")[0]
+      pr_id = msg.split("issue_id: ")[1].split(",")[0]
       console.log("pr_id:", pr_id)
       pr_json = await getPrJson( { server, owner, repo, prId: pr_id })
-    } if (res.status === 404 ) {
+    } else if (res.status === 404 ) {
       returnObject.message = pr_json.message;
       return returnObject;
+    } else {
+      pr_id = pr_json.number;
     }
 
     // now interpret the JSON and return the values
@@ -64,6 +67,7 @@ export async function checkMergeDefaultIntoUserBranch({
     const baseSha = pr_json.base.sha;
     const mergeable_base = pr_json.mergeable_base;
 
+    returnObject.pr = pr_id;
     if ( mergeable ) {
       returnObject.conflict = false;
       if ( headSha === baseSha && baseSha === mergeable_base ) {
