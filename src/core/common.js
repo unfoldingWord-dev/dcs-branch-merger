@@ -27,5 +27,5 @@ export async function getRepoJson({
   } catch (e) {
     return null
   }
-  return res.json();
+  return res;
 }

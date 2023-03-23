@@ -10,11 +10,13 @@ import { apiPath } from './constants'
 export async function checkMergeUserIntoDefaultBranch({
   server, owner, repo, userName, userBranch, tokenid,
 }) {
-  let returnObject = { syncNeeded: false, conflict: false, message: "", pr: "" };
+  let returnObject = { syncNeeded: false, conflict: false, message: "", pr: "", status: "" };
   let defaultBranch = "master";
 
   let res = await getRepoJson( { server, owner, repo })
-  if (res.status != "200") {
+  if (res.status !== 200) {
+    console.log("repo res:", res)
+    returnObject.status = res.status;
     returnObject.message = `repository ${owner}/${repo} not found`;
     return returnObject;
   } else {
@@ -35,8 +37,10 @@ export async function checkMergeUserIntoDefaultBranch({
       }`,
     })
     let pr_id = "";
+    const status = res.status;
+    returnObject.status = status;
     pr_json = await res.json()
-    if ( res.status === 409 ) {
+    if ( status === 409 ) {
       // then the body.message will contain the pr number
       const msg = pr_json.message
       // have to parse the text returned. Hopefully it doesn't change!
@@ -52,7 +56,7 @@ export async function checkMergeUserIntoDefaultBranch({
       pr_id = msg.split("issue_id: ")[1].split(",")[0]
       console.log("pr_id:", pr_id)
       pr_json = await getPrJson( { server, owner, repo, prId: pr_id })
-    } else if (res.status === 404 ) {
+    } else if (status === 404 ) {
       returnObject.message = pr_json.message;
       return returnObject;
     } else {
