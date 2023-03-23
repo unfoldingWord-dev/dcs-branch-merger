@@ -63,8 +63,7 @@ export async function checkMergeDefaultIntoUserBranch({
     const headSha = pr_json.head.sha;
     const baseSha = pr_json.base.sha;
     const mergeable_base = pr_json.mergeable_base;
-    // template return
-    // case 1
+
     if ( mergeable ) {
       returnObject.conflict = false;
       if ( headSha === baseSha && baseSha === mergeable_base ) {
@@ -81,7 +80,7 @@ export async function checkMergeDefaultIntoUserBranch({
     } else {
       returnObject.conflict = true;
     }
-{}
+
   } catch (e) {
     console.log("e:",e)
   }
