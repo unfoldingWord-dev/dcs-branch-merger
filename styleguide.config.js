@@ -10,26 +10,13 @@ let sections = [
 		content: 'README.md',
 	},
 	{
-		name: 'Check merge of Default into User branch',
+		name: 'Check merge of Default branch into User branch',
 		content: 'src/core/CheckMergeDefaultIntoUserBranch.md',
 	},
-	// {
-	// 	name: 'TSV String to Table with Errors',
-	// 	content: 'src/core/TsvStringToTableWithErrors.md',
-	// },
-	// {
-	// 	name: 'Table to TSV String',
-	// 	content: 'src/core/TableToTsvString.md',
-	// },
-	// {
-	// 	name: 'Table to TSV String with Errors',
-	// 	content: 'src/core/TableToTsvStringWithErrors.md',
-	// },
-	// {
-	// 	name: 'Round Trip Example',
-	// 	content: 'src/core/RoundTrip.md',
-	// },
-
+	{
+		name: 'Check merge of User branch into Default branch',
+		content: 'src/core/CheckMergeUserIntoDefaultBranch.md',
+	},
 ];
 
 module.exports = {

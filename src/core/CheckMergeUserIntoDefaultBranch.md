@@ -1,9 +1,10 @@
-This demo is a test of checking for a merge of the default branch into the user branch.
+This demo is a test of checking for a merge of the user branch into the default branch.
 You must supply values server, owner, repo, userName, userBranch, and tokenid.
+
 
 ```js
 import {useState, useEffect} from 'react';
-import { checkMergeDefaultIntoUserBranch } from './checkMergeDefaultIntoUserBranch.js';
+import { checkMergeUserIntoDefaultBranch } from './checkMergeUserIntoDefaultBranch.js';
 
 function Component() {
   const server = "qa.door43.org"
@@ -17,7 +18,7 @@ function Component() {
 
   useEffect( () => {
     const doCheck = async () => {
-      const _results = await checkMergeDefaultIntoUserBranch(
+      const _results = await checkMergeUserIntoDefaultBranch(
         {server, owner, repo, userName, userBranch, tokenid}
       );
       setResults(_results)

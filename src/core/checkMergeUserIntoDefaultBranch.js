@@ -7,7 +7,7 @@ import { apiPath } from './constants'
   Reference swagger:
   https://qa.door43.org/api/swagger#/repository/repoCreatePullRequest
 */
-export async function checkMergeDefaultIntoUserBranch({
+export async function checkMergeUserIntoDefaultBranch({
   server, owner, repo, userName, userBranch, tokenid,
 }) {
   let returnObject = { syncNeeded: false, conflict: false, message: "" };
@@ -29,9 +29,9 @@ export async function checkMergeDefaultIntoUserBranch({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: `{
-        "base": "${defaultBranch}",
-        "head": "${userBranch}",
-        "title": "Merge ${defaultBranch} into ${userBranch} by ${userName}"
+        "base": "${userBranch}",
+        "head": "${defaultBranch}",
+        "title": "Merge ${userBranch} into ${defaultBranch} by ${userName}"
       }`,
     })
     pr_json = await res.json()
