@@ -1,5 +1,6 @@
 import Path from 'path'
 import { getPrJson } from './common'
+import { getRepoJson } from './common'
 import { apiPath } from './constants'
 
 /*
@@ -9,29 +10,29 @@ import { apiPath } from './constants'
 export async function checkMergeDefaultIntoUserBranch({
   server, owner, repo, userName, userBranch, tokenid,
 }) {
-  const date = new Date(Date.now())
-  const dateString = date.toISOString()
+  let returnObject = { syncNeeded: false, conflict: false, message: "" };
+  let defaultBranch = "master";
+
+  let res = await getRepoJson( { server, owner, repo })
+  console.log("repo_json", repo_json)
+  if (res.status !== "200") {
+    returnObject.message = `repository ${owner}/${repo} not found`;
+    return returnObject;
+  } else {
+    let repo_json = await res.json();
+    defaultBranch = repo_json.default_branch;
+  }
+
   const uri = "https://" + server + '/' + Path.join(apiPath,'repos',owner,repo,'pulls')
   let pr_json = {};
-  let returnObject = { syncNeeded: false, conflict: false, message: "" };
   try {
     let res = await fetch(uri+'?token='+tokenid, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: `{
-        "assignee": "${userName}",
-        "assignees": [
-          "${userName}"
-        ],
-        "base": "master",
-        "body": "Merge master into user branch by ${userName}",
-        "due_date": "${dateString}",
+        "base": "${defaultBranch}",
         "head": "${userBranch}",
-        "labels": [
-          0
-        ],
-        "milestone": 0,
-        "title": "${userBranch}"
+        "title": "Merge master into ${userBranch} by ${userName}"
       }`,
     })
     pr_json = await res.json()
@@ -51,6 +52,9 @@ export async function checkMergeDefaultIntoUserBranch({
       const pr_id = msg.split("issue_id: ")[1].split(",")[0]
       console.log("pr_id:", pr_id)
       pr_json = await getPrJson( { server, owner, repo, prId: pr_id })
+    } if (res.status === 404 ) {
+      returnObject.message = pr_json.message;
+      return returnObject;
     }
 
     // now interpret the JSON and return the values
