@@ -24,7 +24,7 @@ export async function checkMergeUserIntoDefaultBranch({
   const baseSha = prJson.base.sha
   const mergeBase = prJson.merge_base
   returnObject.conflict = ! mergeable
-  returnObject.mergeNeeded = mergeable && (headSha !== baseSha && baseSha !== mergeBase)
+  returnObject.mergeNeeded = mergeable && (headSha !== baseSha && headSha !== mergeBase)
   console.log(mergeable, headSha, baseSha, mergeBase, returnObject.mergeNeeded)
   return returnObject
 }
