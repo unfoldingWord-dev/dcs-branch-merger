@@ -1,6 +1,6 @@
 This demo is a test of checking for an update of the user branch from master.
 
-Supply values for `server`, `owner`, `repo`, and `tokenid` or use the defaults.
+Supply values for `server`, `owner`, `repo`, `userBranch` and `tokenid` or use the defaults.
 
 Set `inputsReady = true` when you are ready to check.
 
