@@ -151,7 +151,7 @@ export async function mergePullRequest({
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: `{
-        "Do": "merge",
+        "Do": "squash",
         "delete_branch_after_merge": true,
         "force_merge": true
       }`,
