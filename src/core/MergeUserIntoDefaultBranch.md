@@ -4,7 +4,7 @@ Supply values for `server`, `owner`, `repo`, `userBranch` and `tokenid` or use t
 
 Set `inputsReady = true` when you are ready to check.
 
-App should do the call of checking if master should be merged into user branch first: `checkMergeUserIntoDefaultBranch()` (See [Check Merge User Branch into Default Branch](/#/Check%20Merge%20of%20User%20Branch%20into%20Default%20Branch) Demo)
+App should do the call of checking if master should be merged into user branch first: `checkMergeUserIntoDefaultBranch()` (See [Check Merge User Branch into Default Branch](#/Check%20Merge%20of%20User%20Branch%20into%20Default%20Branch) Demo)
 
 ```js
 import {useState, useEffect} from 'react';
