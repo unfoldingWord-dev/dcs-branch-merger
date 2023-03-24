@@ -10,20 +10,20 @@ let sections = [
 		content: 'README.md',
 	},
 	{
-		name: 'Check merge of Default branch into User branch',
+		name: 'Check Merge of Default Branch into User Branch',
 		content: 'src/core/CheckMergeDefaultIntoUserBranch.md',
 	},
 	{
-		name: 'Check merge of User branch into Default branch',
+		name: 'Merge Default Branch into User Branch',
+		content: 'src/core/MergeDefaultIntoUserBranch.md',
+	},
+	{
+		name: 'Check Merge of User Branch into Default Branch',
 		content: 'src/core/CheckMergeUserIntoDefaultBranch.md',
 	},
 	{
-		name: 'Update user branch from master',
-		content: 'src/core/updatePullRequest.md',
-	},
-	{
-		name: 'Merge user branch to master',
-		content: 'src/core/mergePullRequest.md',
+		name: 'Merge User Branch into Default Branch',
+		content: 'src/core/MergeUserIntoDefaultBranch.md',
 	},
 ];
 
