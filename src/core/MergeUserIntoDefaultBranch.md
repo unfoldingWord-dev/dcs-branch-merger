@@ -16,7 +16,7 @@ function Component() {
   const repo = "en_tn"
   const userBranch = "branch-ahead"
   const tokenid = "c8b93b7ccf7018eee9fec586733a532c5f858cdd" // for single org use of the dcs-poc user
-  const inputsReady = false // set to true when settings below are ready
+  const inputsReady = false // set to true when settings above are ready
 
   const [results, setResults] = useState(null)
 
