@@ -6,7 +6,7 @@ import { apiPath } from './constants'
 export async function getPrJson({
   server, owner, repo, prId,
 }) {
-  console.log(server, owner, repo, prId)
+  console.log("getPrJson()",server, owner, repo, prId)
   const uri = "https://" + server + '/' + Path.join(apiPath, 'repos', owner, repo, 'pulls', prId)
   let res = {}
   try {
@@ -21,7 +21,7 @@ export async function getPrJson({
 export async function getUserJson({
   server, tokenid
 }) {
-  console.log(server, tokenid)
+  console.log("getUserJson()",server, tokenid)
   const uri = "https://" + server + '/' + Path.join(apiPath, 'user')
   let res = await fetch(uri, {
     method: 'GET',
@@ -32,10 +32,8 @@ export async function getUserJson({
     case 401:
       throw Error("invalid token")
     case 200:
-      console.log("HERE2")
       return await res.json()
     default:
-      console.log("HERE3")
       throw Error("unknown error")
   }
 }
@@ -45,7 +43,6 @@ export async function getUsername({
   server, tokenid
 }) {
   const userJson = await getUserJson({ server, tokenid })
-  console.log(userJson)
   return userJson.login
 }
 

@@ -13,10 +13,15 @@ function Component() {
   const owner = "dcs-poc-org"
   // Can use: en_tn, en_tn_main_branch
   const repo = "en_tn"
-  // Can use: branch-is-same, branch-behind, branch-ahead, branch-behind-and-ahead, branch-conflicts
+  /* Can use: branch-is-same, branch-behind, 
+      branch-ahead, branch-behind-and-ahead, 
+      branch-conflicts
+  */
   const userBranch = "branch-behind"
-  const tokenid = "c8b93b7ccf7018eee9fec586733a532c5f858cdd" // for single org use of the dcs-poc user
-  const inputsReady = false // set to true when settings above are ready
+  // for single org use of the dcs-poc user
+  const tokenid = "c8b93b7ccf7018eee9fec586733a532c5f858cdd" 
+  // set to true when settings above are ready
+  const inputsReady = false 
  
   const [results, setResults] = useState(null)
 
