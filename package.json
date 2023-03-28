@@ -13,13 +13,16 @@
     "node": ">=4"
   },
   "scripts": {
-    "build": "react-scripts build",
+    "build": "build",
     "prepublishOnly": "rm -fr ./dist & babel ./src --out-dir ./dist -s inline",
     "predeploy": "yarn styleguide:build",
     "deploy": "gh-pages -d styleguide",
     "postpublish": "yarn deploy",
     "start": "styleguidist server",
     "styleguide:build": "styleguidist build"
+  },
+  "dependencies": {
+    "path": "0.12.7"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
