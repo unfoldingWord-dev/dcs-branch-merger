@@ -11,7 +11,7 @@ import {useState, useEffect} from 'react';
 import { mergeDefaultIntoUserBranch } from './mergeDefaultIntoUserBranch.js';
 
 function Component() {
-  const server = "qa.door43.org"
+  const server = "https://qa.door43.org"
   const owner = "dcs-poc-org"
   // Can use: en_tn, en_tn_main_branch
   const repo = "en_tn"

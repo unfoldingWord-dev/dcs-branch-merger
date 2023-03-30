@@ -7,7 +7,7 @@ export async function getPrJson({
   server, owner, repo, prId,
 }) {
   console.log("getPrJson()",server, owner, repo, prId)
-  const uri = "https://" + server + '/' + Path.join(apiPath, 'repos', owner, repo, 'pulls', prId)
+  const uri = server + '/' + Path.join(apiPath, 'repos', owner, repo, 'pulls', prId)
   let res = {}
   try {
     res = await fetch(uri);
@@ -22,7 +22,7 @@ export async function getUserJson({
   server, tokenid
 }) {
   console.log("getUserJson()",server, tokenid)
-  const uri = "https://" + server + '/' + Path.join(apiPath, 'user')
+  const uri = server + '/' + Path.join(apiPath, 'user')
   let res = await fetch(uri, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${tokenid}` },
@@ -54,8 +54,9 @@ export async function getPrJsonByUserBranch({
   // Since only one open PR can exist, the request will return a 409 if it does with information 
   // we can use to get the existing PR, otherwise use the newly created PR.
   const username = await getUsername({ server, tokenid })
+  console.log("username from getUsername() is:", username)
   const defaultBranch = await getRepoDefaultBranch({ server, owner, repo })
-  const uri = "https://" + server + '/' + Path.join(apiPath, 'repos', owner, repo, 'pulls')
+  const uri = server + '/' + Path.join(apiPath, 'repos', owner, repo, 'pulls')
   let payload = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${tokenid}` },
@@ -99,7 +100,7 @@ export async function getPrJsonByUserBranch({
 export async function getRepoJson({
   server, owner, repo,
 }) {
-  const uri = "https://" + server + '/' + Path.join(apiPath, 'repos', owner, repo)
+  const uri = server + '/' + Path.join(apiPath, 'repos', owner, repo)
   let res = {}
   try {
     res = await fetch(uri);
@@ -127,7 +128,7 @@ export async function getRepoDefaultBranch({
 export async function updatePullRequest({
   server, owner, repo, prNum, tokenid
 }) {
-  const uri = "https://" + server + '/' +
+  const uri = server + '/' +
     Path.join(apiPath, 'repos', owner, repo, 'pulls', `${prNum}`, 'update')
 
   let res_json = {};
@@ -141,7 +142,7 @@ export async function updatePullRequest({
 export async function mergePullRequest({
   server, owner, repo, prNum, tokenid
 }) {
-  const uri = "https://" + server + '/' +
+  const uri = server + '/' +
     Path.join(apiPath, 'repos', owner, repo, 'pulls', `${prNum}`, 'merge')
 
   return await fetch(uri + `?token=${tokenid}`, {
