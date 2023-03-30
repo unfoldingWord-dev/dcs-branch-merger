@@ -1,7 +1,7 @@
 {
   "name": "dcs-branch-merger",
   "description": "A package for merging branches through the DCS API.",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.7",
   "private": false,
   "homepage": "https://unfoldingword.github.io/dcs-branch-merger/",
   "repository": {
@@ -17,7 +17,7 @@
     "prepublishOnly": "rm -fr ./dist & babel ./src --out-dir ./dist -s inline",
     "predeploy": "yarn styleguide:build",
     "deploy": "gh-pages -d styleguide",
-    "postpublish": "yarn deploy",
+    "xpostpublish": "yarn deploy",
     "start": "styleguidist server",
     "styleguide:build": "styleguidist build"
   },
