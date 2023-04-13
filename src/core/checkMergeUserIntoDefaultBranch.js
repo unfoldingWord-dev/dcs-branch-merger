@@ -1,7 +1,7 @@
 import { getPrJsonByUserBranch } from './common'
 
 export async function checkMergeUserIntoDefaultBranch({
-  server, owner, repo, userBranch, tokenid,
+  server, owner, repo, userBranch, prDescription, tokenid,
 }) {
   console.log(server, owner, repo, userBranch, tokenid)
   let returnObject = {
@@ -13,7 +13,7 @@ export async function checkMergeUserIntoDefaultBranch({
   };
   let prJson = {}
   try {
-    prJson = await getPrJsonByUserBranch( {server, owner, repo, userBranch, tokenid} )
+    prJson = await getPrJsonByUserBranch( {server, owner, repo, userBranch, prBody: prDescription, tokenid} )
   } catch (e) {
     returnObject.error = true
     returnObject.message = e.message

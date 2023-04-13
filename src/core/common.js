@@ -48,7 +48,7 @@ export async function getUsername({
 
 // example: POST https://qa.door43.org/api/v1/repos/unfoldingword/en_ult/pulls
 export async function getPrJsonByUserBranch({
-  server, owner, repo, userBranch, tokenid
+  server, owner, repo, userBranch, prBody, tokenid
 }) {
   // We get a PR by UserBranch by first creating an open PR for the user branch into master.
   // Since only one open PR can exist, the request will return a 409 if it does with information 
@@ -57,13 +57,16 @@ export async function getPrJsonByUserBranch({
   console.log("username from getUsername() is:", username)
   const defaultBranch = await getRepoDefaultBranch({ server, owner, repo })
   const uri = server + '/' + Path.join(apiPath, 'repos', owner, repo, 'pulls')
+  let _prBody = ""
+  if ( prBody ) { _prBody = prBody }
   let payload = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${tokenid}` },
     body: `{  
         "base": "${defaultBranch}",
         "head": "${userBranch}",
-        "title": "Merge ${userBranch} into ${defaultBranch} by ${username}"
+        "title": "Merge ${userBranch} into ${defaultBranch} by ${username}",
+        "body": "${_prBody}"
       }`,
   }
   let res = await fetch(uri, payload)
@@ -140,20 +143,17 @@ export async function updatePullRequest({
 
 // example: POST https://qa.door43.org/api/v1/repos/unfoldingword/en_ult/pulls/3358/merge
 export async function mergePullRequest({
-  server, owner, repo, prNum, prMessage, tokenid
+  server, owner, repo, prNum, tokenid
 }) {
   const uri = server + '/' +
     Path.join(apiPath, 'repos', owner, repo, 'pulls', `${prNum}`, 'merge')
-  let MergeMessageField = ""
-  if ( prMessage ) { MergeMessageField = prMessage }
   return await fetch(uri + `?token=${tokenid}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: `{
         "Do": "squash",
         "delete_branch_after_merge": true,
-        "force_merge": true,
-        "MergeMessageField": ${MergeMessageField},
+        "force_merge": true
       }`,
   })
 }

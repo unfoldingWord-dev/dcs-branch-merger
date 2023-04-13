@@ -24,11 +24,11 @@ function Component() {
   const inputsReady = false 
 
   const [results, setResults] = useState(null)
-
+  const prDescription = "This is a checkMergeUserIntoDefaultBranch pr description"
   useEffect( () => {
     const doCheck = async () => {
       const _results = await checkMergeUserIntoDefaultBranch(
-        {server, owner, repo, userBranch, tokenid}
+        {server, owner, repo, userBranch, prDescription, tokenid}
       );
       setResults(_results)
     }
