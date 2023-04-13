@@ -9,6 +9,7 @@ export async function checkMergeUserIntoDefaultBranch({
     conflict: false, 
     error: false,
     message: "",
+    pullRequest: "",
   };
   let prJson = {}
   try {
@@ -23,8 +24,10 @@ export async function checkMergeUserIntoDefaultBranch({
   const headSha = prJson.head.sha
   const baseSha = prJson.base.sha
   const mergeBase = prJson.merge_base
+  const pullRequest = prJson.url
   returnObject.conflict = ! mergeable
   returnObject.mergeNeeded = mergeable && (headSha !== baseSha && headSha !== mergeBase)
+  returnObject.pullRequest = pullRequest
   console.log(mergeable, headSha, baseSha, mergeBase, returnObject.mergeNeeded)
   return returnObject
 }
