@@ -140,18 +140,20 @@ export async function updatePullRequest({
 
 // example: POST https://qa.door43.org/api/v1/repos/unfoldingword/en_ult/pulls/3358/merge
 export async function mergePullRequest({
-  server, owner, repo, prNum, tokenid
+  server, owner, repo, prNum, prMessage, tokenid
 }) {
   const uri = server + '/' +
     Path.join(apiPath, 'repos', owner, repo, 'pulls', `${prNum}`, 'merge')
-
+  let MergeMessageField = ""
+  if ( prMessage ) { MergeMessageField = prMessage }
   return await fetch(uri + `?token=${tokenid}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: `{
         "Do": "squash",
         "delete_branch_after_merge": true,
-        "force_merge": true
+        "force_merge": true,
+        "MergeMessageField": ${MergeMessageField},
       }`,
   })
 }
