@@ -44,3 +44,7 @@ Response:
   "token_last_eight": "b4bab076"
 }
 </pre>
+
+# To reset test repository
+
+To reset, just delete it (make sure you're doing this on qa!), then go to + => New Migration => Gitea and just put https://git.door43.org/dcs-poc-org/en_tn as the URL, and change Owner to dcs-poc-org (you must be a member) and the repo name should be populated already (en_tn)
