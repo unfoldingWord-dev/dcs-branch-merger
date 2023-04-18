@@ -24,11 +24,18 @@ function Component() {
   const inputsReady = false // set to true when settings above are ready
 
   const [results, setResults] = useState(null)
+  const prDescription = `This is a multiline
+  description for the PR.
+  server = ${server}
+  owner = ${owner}
+  repo = ${repo}
+  branch = ${userBranch}
+  `
 
   useEffect( () => {
     const doMerge = async () => {
       const _results = await mergeUserIntoDefaultBranch(
-        {server, owner, repo, userBranch, tokenid}
+        {server, owner, repo, userBranch, prDescription, tokenid}
       );
       setResults(_results)
     }
