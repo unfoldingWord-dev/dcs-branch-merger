@@ -143,8 +143,44 @@ export async function updatePullRequest({
 
 // example: POST https://qa.door43.org/api/v1/repos/unfoldingword/en_ult/pulls/3358/merge
 export async function mergePullRequest({
-  server, owner, repo, prNum, tokenid
+  server, owner, repo, prNum, prBody, tokenid
 }) {
+
+  // if pr body is not empty, then first update the PR with it
+  // example: 
+  /*
+    curl -X 'PATCH' \
+      'https://qa.door43.org/api/v1/repos/dcs-poc-org/en_tn/pulls/2' \
+      -H 'accept: application/json' \
+      -H 'authorization: Basic your-psw-here' \
+      -H 'Content-Type: application/json' \
+      -d '{
+      "body": "This is an update test!"
+    }'
+
+    Status on success is a 201
+  */
+  if ( prBody && prBody !== "" ) {
+    console.log("Updating PR with description:", prBody)
+    const uri = server + '/' + Path.join(apiPath, 'repos', owner, repo, 'pulls', `${prNum}`)
+    let res = {}
+    try {
+      res = await fetch(uri + `?token=${tokenid}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: `{
+            "body": "${prBody}"
+        }`,
+      })
+    } catch (e) {
+      return Error(`error fetching to update PR: ${uri}`)
+    }
+    if ( res.status !== 201 ) {
+      throw Error(`Unknown error on update to PR, status ${res.status}`)
+    }
+  }
+
+  // now do the merge
   const uri = server + '/' +
     Path.join(apiPath, 'repos', owner, repo, 'pulls', `${prNum}`, 'merge')
   return await fetch(uri + `?token=${tokenid}`, {
