@@ -193,3 +193,60 @@ export async function mergePullRequest({
       }`,
   })
 }
+
+/*
+The URL for base contents:
+https://git.door43.org/api/v1/repos/dcs-poc-org/en_tn/contents/tn_TIT.tsv?ref=2d137737c84b93c4336d1de2937f89269fba9e93
+*/
+export async function getContentsSha({
+  server, owner, repo, filename, commitSha
+}) {
+  const uri = server + '/' + Path.join(apiPath, 'repos', owner, repo, 'contents', filename, '?ref='+commitSha)
+  // console.log("getContentsSha() uri:", uri)
+  let sha = null
+  try {
+    const res = await fetch(uri);
+    const cJson = await res.json();
+    sha = cJson.sha
+  } catch (e) {
+    console.log("getContentsSha() error:", e)
+    sha = null
+  }
+  return sha
+}
+
+
+
+export async function checkFilenameUpdateable({
+  server, owner, repo, prJson, filename
+}) {
+  let fileIsUpdateable = false
+  // get the SHAs we need
+  // const headSha = prJson.head.sha
+  const baseSha = prJson.base.sha
+  const mergeBase = prJson.merge_base
+
+  // Case 1. has master had any updates?
+  if ( mergeBase === baseSha ) {
+    // master has not changed since branch created
+    fileIsUpdateable = false
+  } else {
+    // master has been update since branch created
+    // Therefore check if file has been updated in master
+    const mergeBaseFileSha = await getContentsSha({server, owner, repo, filename, commitSha: mergeBase})
+    const baseFileSha = await getContentsSha({server, owner, repo, filename, commitSha: baseSha})
+    // console.log("checkFilenameUpdateable() mergeBaseFileSha, baseFileSha",mergeBaseFileSha, baseFileSha)
+    if ( mergeBaseFileSha === null || baseFileSha === null ) {
+      // then an error may have happened during fetch
+      fileIsUpdateable = false
+    }
+    if ( mergeBaseFileSha === baseFileSha ) {
+      // then file has not been updated in master branch
+      fileIsUpdateable = false
+    } else {
+      fileIsUpdateable = true
+    }
+  }
+  // console.log("checkFilenameUpdateable() returning:", fileIsUpdateable)
+  return fileIsUpdateable
+}

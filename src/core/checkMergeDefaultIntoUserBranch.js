@@ -1,7 +1,7 @@
-import { getPrJsonByUserBranch } from './common'
+import { getPrJsonByUserBranch, checkFilenameUpdateable } from './common'
 
 export async function checkMergeDefaultIntoUserBranch({
-  server, owner, repo, userBranch, prDescription, tokenid,
+  server, owner, repo, userBranch, prDescription, tokenid, filename,
 }) {
   console.log(server, owner, repo, userBranch, tokenid)
   let returnObject = {
@@ -28,6 +28,13 @@ export async function checkMergeDefaultIntoUserBranch({
   returnObject.conflict = ! mergeable
   returnObject.mergeNeeded = mergeable && (headSha !== baseSha && baseSha !== mergeBase)
   returnObject.pullRequest = pullRequest
+  if ( mergeable && filename ) {
+    // narrow the context for mergeability to this single file, ignoring any others
+    // Do note: the boolean for mergeable is in terms of the entire branch.
+    // Therefore while the conflict may exist in a different file, out of an abundance
+    // of caution we will not test for the provided file when conflicts exist anywhere
+    returnObject.mergeNeeded = await checkFilenameUpdateable({server, owner, repo, prJson, filename})
+  }
   console.log(mergeable, headSha, baseSha, mergeBase, returnObject.mergeNeeded)
   return returnObject
 }

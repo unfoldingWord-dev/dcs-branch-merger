@@ -18,6 +18,12 @@ function Component() {
       branch-conflicts
   */
   const userBranch = "branch-behind"
+  /*
+    below are two filenames that can be checked.
+    Titus did change, but Zephaniah did not
+  */
+  const file1 = "tn_TIT.tsv" // file did change
+  const file2 = "tn_ZEP.tsv" // file did not change
   // for single org use of the dcs-poc user
   const tokenid = "c8b93b7ccf7018eee9fec586733a532c5f858cdd" 
   // set to true when settings above are ready
@@ -28,7 +34,8 @@ function Component() {
   useEffect( () => {
     const doCheck = async () => {
       const _results = await checkMergeDefaultIntoUserBranch(
-        {server, owner, repo, userBranch, prDescription, tokenid}
+        { filename: file1,
+          server, owner, repo, userBranch, prDescription, tokenid}
       );
       setResults(_results)
     }
