@@ -21,7 +21,7 @@ function Component() {
   */
   const userBranch = "dcs-poc-commit-and-check-" // add a number to the end of a branch that doesn't exist
   const tokenid = "c8b93b7ccf7018eee9fec586733a532c5f858cdd" // for single org use of the dcs-poc user
-  const checkCountMax = 4
+  const checkCountMax = 3
   const inputsReady = false // set to true when settings above are ready
 
   const [results, setResults] = useState([])
