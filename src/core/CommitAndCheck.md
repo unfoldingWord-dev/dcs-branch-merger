@@ -1,10 +1,8 @@
-This demo is a test of updating the user branch from master
+This demo is a test of creating a new user branch with a commit of a new file, then checking the status of mering user branch into master. This is to see if there is any race condition. 
 
-Supply values for `server`, `owner`, `repo`, `userBranch` and `tokenid` or use the defaults.
+Supply values for `server`, `owner`, `repo`, `userBranch`, `tokenid` and `checkCountMax` or use the defaults.
 
 Set `inputsReady = true` when you are ready to check.
-
-App should do the call of checking if master should be merged into user branch first: `checkMergeDefaultIntoUserBranch()` (See [Check Merge Default Branch into User Branch](#/Check%20Merge%20of%20Default%20Branch%20into%20User%20Branch) Demo)
 
 ```js
 import {useState, useEffect} from 'react';
