@@ -33,7 +33,7 @@ function Component() {
       const _result = await makeCommitWithNewBranch({server, owner, repo, userBranch, tokenid})
       console.log(_result)
       if(_result.status == 422) {
-        alert(`Please delete the branch ${userBranch} first and run again.`)
+        alert(`Please delete the branch ${userBranch} first and run again or use a different branch`)
       } else if(_result.status == 201) {
         setBranchMade(true)
       } else {
