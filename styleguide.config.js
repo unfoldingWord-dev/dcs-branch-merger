@@ -25,6 +25,10 @@ let sections = [
 		name: 'Merge User Branch into Default Branch',
 		content: 'src/core/MergeUserIntoDefaultBranch.md',
 	},
+	{
+		name: 'Commit and Check PR',
+		content: 'src/core/CommitAndCheck.md',
+	},
 ];
 
 module.exports = {
