@@ -2,6 +2,8 @@ This demo is a test of creating a new user branch with a commit of a new file, t
 
 Supply values for `server`, `owner`, `repo`, `userBranch`, `tokenid` and `checkCountMax` or use the defaults.
 
+You must enter suffix to `userBranch` that doesn't exist to trigger.
+
 Set `inputsReady = true` when you are ready to check.
 
 ```js
@@ -17,7 +19,7 @@ function Component() {
       branch-ahead, branch-behind-and-ahead, 
       branch-conflicts
   */
-  const userBranch = "dcs-poc-commit-and-check"
+  const userBranch = "dcs-poc-commit-and-check-" // add a number to the end of a branch that doesn't exist
   const tokenid = "c8b93b7ccf7018eee9fec586733a532c5f858cdd" // for single org use of the dcs-poc user
   const checkCountMax = 4
   const inputsReady = false // set to true when settings above are ready
@@ -41,7 +43,7 @@ function Component() {
     if ( (server !== "") 
       && (owner !== "") 
       && (repo !== "") 
-      && (userBranch !== "" )
+      && (userBranch !== "" && userBranch != "dcs-poc-commit-and-check-")
       && (tokenid !== "")
       && inputsReady) 
     {
@@ -62,7 +64,7 @@ function Component() {
     if ( (server !== "") 
       && (owner !== "") 
       && (repo !== "") 
-      && (userBranch !== "" )
+      && (userBranch !== "")
       && (tokenid !== "")
       && inputsReady && branchMade && checkCount < checkCountMax) 
     {
