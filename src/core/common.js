@@ -215,8 +215,31 @@ export async function getContentsSha({
   return sha
 }
 
+/**
+@typedef RepoAndPRJsonAndFileName
+@property {HttpURL} server
+@property {string} owner
+@property {string} repo
+@property {JSON} prJson
+@property {string} filename
+*/
 
+/**
+@typedef {boolean} FileIsUpdatable
+@description Whether the given file is updatable. 
 
+- `true` if the file has been updated in the base branch for a PR
+- `false` if the file hasn't been updated in the base branch
+*/
+
+/**
+@function
+@description Checks if a file has been updated in the base branch of a PR. 
+This is used to determine if a PR is mergable 
+@param RepoAndPRJsonAndFileName
+@return FileIsUpdatable
+@see checkMergeDefaultIntoUserBranch
+*/
 export async function checkFilenameUpdateable({
   server, owner, repo, prJson, filename
 }) {
