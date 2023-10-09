@@ -46,7 +46,29 @@ export async function getUsername({
   return userJson.login
 }
 
-// example: POST https://qa.door43.org/api/v1/repos/unfoldingword/en_ult/pulls
+/**
+@typedef RepoAndPRBody
+@property {GitURL} server
+@property {string} owner
+@property {string} repo
+@property {string} userBranch
+@property {string} prBody
+@property {string} tokenid
+*/
+
+/**
+@typedef {object} PRJson
+@description This is the result of calling the API to create a new PR.
+@see {@link https://qa.door43.org/api/swagger#/repository/repoCreatePullRequest} for the JSON schema
+*/
+
+/**
+@function
+@description
+@param {RepoAndPRBody} repoAndPRBody
+@result {PRJson}
+@example POST https://qa.door43.org/api/v1/repos/unfoldingword/en_ult/pulls
+*/
 export async function getPrJsonByUserBranch({
   server, owner, repo, userBranch, prBody, tokenid
 }) {
