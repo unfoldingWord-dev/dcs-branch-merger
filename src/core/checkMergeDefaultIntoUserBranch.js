@@ -3,7 +3,6 @@ import { getPrJsonByUserBranch, checkFilenameUpdateable } from './common'
 export async function checkMergeDefaultIntoUserBranch({
   server, owner, repo, userBranch, prDescription, tokenid, filename,
 }) {
-  console.log(server, owner, repo, userBranch, tokenid)
   let returnObject = {
     mergeNeeded: false,
     conflict: false, 
@@ -19,7 +18,6 @@ export async function checkMergeDefaultIntoUserBranch({
     returnObject.message = e.message
     return returnObject
   }
-  console.log("prJson:", prJson)
   const mergeable = prJson.mergeable
   const headSha = prJson.head.sha
   const baseSha = prJson.base.sha
@@ -35,6 +33,5 @@ export async function checkMergeDefaultIntoUserBranch({
     // of caution we will not test for the provided file when conflicts exist anywhere
     returnObject.mergeNeeded = await checkFilenameUpdateable({server, owner, repo, prJson, filename})
   }
-  console.log(mergeable, headSha, baseSha, mergeBase, returnObject.mergeNeeded)
   return returnObject
 }
