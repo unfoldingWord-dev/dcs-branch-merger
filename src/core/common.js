@@ -216,12 +216,19 @@ export async function getContentsSha({
 }
 
 /**
+@typedef {string} SHA
+@description a git commit SHA
+*/
+
+/**
 @typedef RepoAndPRJsonAndFileName
 @property {HttpURL} server
 @property {string} owner
 @property {string} repo
-@property {JSON} prJson
-@property {string} filename
+@property {object} prJson the return value to 
+@property {SHA} prJson.base the SHA of the branch the PR is merging into
+@property {SHA} prJSON.merge_base the SHA of the merge base of the PR (this acts as the last common commit between the PR's base and target branch)
+@property {string} filename the file path in the PR to check its updatable status
 */
 
 /**
@@ -238,38 +245,18 @@ export async function getContentsSha({
 This is used to determine if a PR is mergable 
 @param RepoAndPRJsonAndFileName
 @return FileIsUpdatable
-@see checkMergeDefaultIntoUserBranch
+@see {@link checkMergeDefaultIntoUserBranch}
 */
-export async function checkFilenameUpdateable({
-  server, owner, repo, prJson, filename
-}) {
-  let fileIsUpdateable = false
-  // get the SHAs we need
-  // const headSha = prJson.head.sha
-  const baseSha = prJson.base.sha
-  const mergeBase = prJson.merge_base
-
-  // Case 1. has master had any updates?
-  if ( mergeBase === baseSha ) {
-    // master has not changed since branch created
-    fileIsUpdateable = false
-  } else {
+export const checkFilenameUpdateable = ({
+  server, owner, repo, prJson: {base, merge_base}, filename
+}) => 
+  merge_base === base ? Promise.resolve(false)
     // master has been update since branch created
     // Therefore check if file has been updated in master
-    const mergeBaseFileSha = await getContentsSha({server, owner, repo, filename, commitSha: mergeBase})
-    const baseFileSha = await getContentsSha({server, owner, repo, filename, commitSha: baseSha})
-    // console.log("checkFilenameUpdateable() mergeBaseFileSha, baseFileSha",mergeBaseFileSha, baseFileSha)
-    if ( mergeBaseFileSha === null || baseFileSha === null ) {
-      // then an error may have happened during fetch
-      fileIsUpdateable = false
-    }
-    if ( mergeBaseFileSha === baseFileSha ) {
-      // then file has not been updated in master branch
-      fileIsUpdateable = false
-    } else {
-      fileIsUpdateable = true
-    }
-  }
-  // console.log("checkFilenameUpdateable() returning:", fileIsUpdateable)
-  return fileIsUpdateable
-}
+  : getContentsSha({server, owner, repo, filename, commitSha: merge_base})
+    .then(mergeBaseFileSha => getContentsSha({server, owner, repo, filename, commitSha: base})
+    .then(baseFileSha => 
+      mergeBaseFileSha === null 
+      || baseFileSha === null 
+      || mergeBaseFileSha === baseFileSha ? false : true
+    ))
