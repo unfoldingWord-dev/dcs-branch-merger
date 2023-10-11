@@ -76,7 +76,6 @@ export async function getPrJsonByUserBranch({
   // Since only one open PR can exist, the request will return a 409 if it does with information 
   // we can use to get the existing PR, otherwise use the newly created PR.
   const username = await getUsername({ server, tokenid })
-  console.log("username from getUsername() is:", username)
   const defaultBranch = await getRepoDefaultBranch({ server, owner, repo })
   const uri = server + '/' + Path.join(apiPath, 'repos', owner, repo, 'pulls')
   let _prBody = ""
@@ -110,7 +109,6 @@ export async function getPrJsonByUserBranch({
       // head_branch: gt-RUT-cecil.new, 
       // base_branch: master]"
       pr_num = msg.split("issue_id: ")[1].split(",")[0]
-      console.log("pr_num:", pr_num)
       return await getPrJson({ server, owner, repo, prId: pr_num })
     case 404:
       throw Error(`branch ${userBranch} does not exist`)
@@ -276,7 +274,7 @@ export const checkFilenameUpdateable = ({
     // master has been update since branch created
     // Therefore check if file has been updated in master
   : getContentsSha({server, owner, repo, filename, commitSha: merge_base})
-    .then(mergeBaseFileSha => getContentsSha({server, owner, repo, filename, commitSha: base})
+    .then(mergeBaseFileSha => getContentsSha({server, owner, repo, filename, commitSha: base.sha})
     .then(baseFileSha => 
       mergeBaseFileSha === null 
       || baseFileSha === null 
