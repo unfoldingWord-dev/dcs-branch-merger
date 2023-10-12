@@ -1,33 +1,22 @@
 import Path from 'path'
 import { apiPath } from './constants'
-
+import { when, extendConfig, or, then, forEveryFirst, chain, repoGetJSON} from './PRPromise'
 
 // example: GET https://qa.door43.org/api/v1/repos/unfoldingword/en_ult/pulls/3358
-export async function getPrJson({
-  server, owner, repo, prId,
-}) {
-  console.log("getPrJson()",server, owner, repo, prId)
-  const uri = server + '/' + Path.join(apiPath, 'repos', owner, repo, 'pulls', prId)
-  let res = {}
-  try {
-    res = await fetch(uri);
-  } catch (e) {
-    return null
-  }
-  return res.json()
-}
+export const getPrJson = ({server, owner, repo, prId}) => 
+  fetch(`${server}/${apiPath}/repos/${owner}/${repo}/pulls/${prId}`)
+  .then(r => r.json())
+  .catch(_ => null)
 
 // example: GET https://qa.door43.org/api/v1/user
 export async function getUserJson({
   server, tokenid
 }) {
-  console.log("getUserJson()",server, tokenid)
   const uri = server + '/' + Path.join(apiPath, 'user')
   let res = await fetch(uri, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${tokenid}` },
   })
-  console.log("getUserJson res.Status: ", res.status)
   switch (res.status) {
     case 401:
       throw Error("invalid token")
@@ -63,13 +52,59 @@ export async function getUsername({
 */
 
 /**
+*/
+const prIsForUserBranch = (prJson) =>  
+  when(({userBranch}) => prJson.head.ref === userBranch, prJson)
+
+const getPRJsonFromIssueJSON = (issue) =>   
+  extendConfig({prId: issue.number}, getPrJson)
+
+/**
+@function 
+@description
+get all open PRs created by the given user
+@
+*/
+export const getOpenPRIssuesForUser = (username) => 
+  repoGetJSON(`issues?type=pulls&created_by=${username}&state=open`)
+
+/**
+@function
+@description Fetches the user's branch PR. 
+_NOTE:_ We assume that the user will only have a single PR open at a given time - currently
+this is the default behavior of gitea, but if this ever changes then this would be the best
+place to look
+@param {RepoAndPRBody} repoAndPRBody
+@returns {PRJson}
+@todo change implementation to use `repoAndPRBody.userBranch`. Currently there doesn't seem
+an obvious way from the gitea API to GET a PR based on the branch name. Again, we assume that
+the user will only have a single PR open at any time.
+*/
+export const getPRForUserBranch =
+  then
+  ( getUsername
+  ,  getOpenPRIssuesForUser
+  , forEveryFirst(chain(getPRJsonFromIssueJSON, prIsForUserBranch))
+  )
+
+/**
 @function
 @description
 @param {RepoAndPRBody} repoAndPRBody
 @result {PRJson}
 @example POST https://qa.door43.org/api/v1/repos/unfoldingword/en_ult/pulls
 */
-export async function getPrJsonByUserBranch({
+export const getPrJsonByUserBranch = 
+  or(getPRForUserBranch, createPRForUserBranch)
+
+/**
+@function
+@description
+@param {RepoAndPRBody} repoAndPRBody
+@result {PRJson}
+@example POST https://qa.door43.org/api/v1/repos/unfoldingword/en_ult/pulls
+*/
+async function createPRForUserBranch({
   server, owner, repo, userBranch, prBody, tokenid
 }) {
   // We get a PR by UserBranch by first creating an open PR for the user branch into master.
@@ -77,27 +112,26 @@ export async function getPrJsonByUserBranch({
   // we can use to get the existing PR, otherwise use the newly created PR.
   const username = await getUsername({ server, tokenid })
   const defaultBranch = await getRepoDefaultBranch({ server, owner, repo })
-  const uri = server + '/' + Path.join(apiPath, 'repos', owner, repo, 'pulls')
-  let _prBody = ""
-  if ( prBody ) { _prBody = prBody }
-  let payload = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${tokenid}` },
-    body: `{  
-        "base": "${defaultBranch}",
-        "head": "${userBranch}",
-        "title": "Merge ${userBranch} into ${defaultBranch} by ${username}",
-        "body": "${_prBody}"
-      }`,
-  }
-  let res = await fetch(uri, payload)
-  let pr_json = {}
-  let pr_num = "";
+  const res = await fetch
+    (`${server}/${apiPath}/repos/${owner}/${repo}/pulls`
+    , {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${tokenid}` },
+        body: `{  
+            "base": "${defaultBranch}",
+            "head": "${userBranch}",
+            "title": "Merge ${userBranch} into ${defaultBranch} by ${username}",
+            "body": "${prBody ? prBody : ""}"
+          }`,
+      }
+    )
   switch (res.status) {
     case 409:
+      //In the rare case that: a PR doesn't already exist for the user's branch, and subsequently creating a new PR 
+      //returns the already exist error code, then parse the PR number and attempt a fetch. This branch _should never
+      //happen_ but we leave it here as a last resort.
+
       // then the body.message will contain the pr number in the issue_id field
-      pr_json = await res.json()
-      const msg = pr_json.message
       // have to parse the text returned. Hopefully it doesn't change!
       // here is an example: 
       // message:
@@ -108,14 +142,14 @@ export async function getPrJsonByUserBranch({
       // base_repo_id: 11419, 
       // head_branch: gt-RUT-cecil.new, 
       // base_branch: master]"
-      pr_num = msg.split("issue_id: ")[1].split(",")[0]
-      return await getPrJson({ server, owner, repo, prId: pr_num })
+      const prId = await (res.json().then(({message}) => message.split("issue_id: ")[1].split(",")[0]))
+      return await getPrJson({ server, owner, repo, prId })
     case 404:
       throw Error(`branch ${userBranch} does not exist`)
     case 201:
       return await res.json()
     default:
-      throw Error("unknown error")
+      throw Error("unhandled status ${res.status}")
   }
 }
 
@@ -268,15 +302,15 @@ This is used to determine if a PR is mergable
 @see {@link checkMergeDefaultIntoUserBranch}
 */
 export const checkFilenameUpdateable = ({
-  server, owner, repo, prJson: {base, merge_base}, filename
+  server, owner, repo, prJson: {base: {sha: base}, merge_base}, filename
 }) => 
   merge_base === base ? Promise.resolve(false)
     // master has been update since branch created
     // Therefore check if file has been updated in master
   : getContentsSha({server, owner, repo, filename, commitSha: merge_base})
-    .then(mergeBaseFileSha => getContentsSha({server, owner, repo, filename, commitSha: base.sha})
+    .then(mergeBaseFileSha => getContentsSha({server, owner, repo, filename, commitSha: base})
     .then(baseFileSha => 
-      mergeBaseFileSha === null 
-      || baseFileSha === null 
-      || mergeBaseFileSha === baseFileSha ? false : true
+      mergeBaseFileSha !== null 
+        && baseFileSha !== null 
+        && mergeBaseFileSha !== baseFileSha
     ))
