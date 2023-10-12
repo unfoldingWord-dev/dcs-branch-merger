@@ -52,18 +52,22 @@ export async function getUsername({
 */
 
 /**
+@function
+@description Ensure that the PRJson belongs to the user branch
 */
 const prIsForUserBranch = (prJson) =>  
   when(({userBranch}) => prJson.head.ref === userBranch, prJson)
 
-const getPRJsonFromIssueJSON = (issue) =>   
-  extendConfig({prId: issue.number}, getPrJson)
+/**
+@function
+@description fetch the PRJson for an issue that is a PR
+*/
+const getPRJsonFromIssueJSON = ({number}) =>   
+  extendConfig({prId: number}, getPrJson)
 
 /**
 @function 
-@description
-get all open PRs created by the given user
-@
+@description get all open PRs created by the given user
 */
 export const getOpenPRIssuesForUser = (username) => 
   repoGetJSON(`issues?type=pulls&created_by=${username}&state=open`)
@@ -83,16 +87,15 @@ the user will only have a single PR open at any time.
 export const getPRForUserBranch =
   then
   ( getUsername
-  ,  getOpenPRIssuesForUser
+  , getOpenPRIssuesForUser
   , forEveryFirst(chain(getPRJsonFromIssueJSON, prIsForUserBranch))
   )
 
 /**
 @function
-@description
+@description Fetches the PRJson for the current user branch. If no PR exists create one
 @param {RepoAndPRBody} repoAndPRBody
 @result {PRJson}
-@example POST https://qa.door43.org/api/v1/repos/unfoldingword/en_ult/pulls
 */
 export const getPrJsonByUserBranch = 
   or(getPRForUserBranch, createPRForUserBranch)
