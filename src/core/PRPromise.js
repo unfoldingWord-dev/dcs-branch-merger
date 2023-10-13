@@ -1,5 +1,13 @@
 import { apiPath } from "./constants"
 
+/*
+  @theNerd247
+  Still being new to this idea of functors and monads, and knowing that most
+  of the people in the OCE probably aren't familiar with them, I think it would
+  be helpful to me to have an explanation of what these things do (maybe in
+  english and not in mathematics)
+*/
+
 // Functor
 export const map = (fn, pr) => r => pr(r).then(a => fn(a))
 
