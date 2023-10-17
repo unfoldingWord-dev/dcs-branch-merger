@@ -51,13 +51,11 @@ export async function getUsername({
 @see {@link https://qa.door43.org/api/swagger#/repository/repoCreatePullRequest} for the JSON schema
 */
 
-// @theNerd247 is this saying that when the head ref is equal to the user branch, 
-// then return the resolved prJson? Or does this just return a boolean?
 /**
 @function
 @description Ensure that the PRJson belongs to the user branch
 */
-const prIsForUserBranch = (prJson) =>  
+const keepJsonWhenOnUserBranch = (prJson) =>  
   when(({userBranch}) => prJson.head.ref === userBranch, prJson)
 
 /**
@@ -74,8 +72,6 @@ const getPRJsonFromIssueJSON = ({number}) =>
 export const getOpenPRIssuesForUser = (username) => 
   repoGetJSON(`issues?type=pulls&created_by=${username}&state=open`)
 
-// @theNerd247 I do like how readable this function is... even if I don't 
-// fully understand what each little function does
 /**
 @function
 @description Fetches the user's branch PR. 
@@ -92,7 +88,7 @@ export const getPRForUserBranch =
   then
   ( getUsername
   , getOpenPRIssuesForUser
-  , forEveryFirst(chain(getPRJsonFromIssueJSON, prIsForUserBranch))
+  , issuesJson => forEveryFirst(chain(getPRJsonFromIssueJSON, keepJsonWhenOnUserBranch), issuesJson)
   )
 
 /**

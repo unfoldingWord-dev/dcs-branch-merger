@@ -3,7 +3,6 @@ import { getPrJsonByUserBranch } from './common'
 export async function checkMergeUserIntoDefaultBranch({
   server, owner, repo, userBranch, prDescription, tokenid,
 }) {
-  console.log(server, owner, repo, userBranch, tokenid)
   let returnObject = {
     mergeNeeded: false,
     conflict: false, 
@@ -19,7 +18,6 @@ export async function checkMergeUserIntoDefaultBranch({
     returnObject.message = e.message
     return returnObject
   }
-  console.log("prJson:", prJson)
   const mergeable = prJson.mergeable
   const headSha = prJson.head.sha
   const baseSha = prJson.base.sha
@@ -28,6 +26,5 @@ export async function checkMergeUserIntoDefaultBranch({
   returnObject.conflict = ! mergeable
   returnObject.mergeNeeded = mergeable && (headSha !== baseSha && headSha !== mergeBase)
   returnObject.pullRequest = pullRequest
-  console.log(mergeable, headSha, baseSha, mergeBase, returnObject.mergeNeeded)
   return returnObject
 }

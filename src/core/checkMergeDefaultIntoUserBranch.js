@@ -41,13 +41,16 @@ exist.
 @param {FileResource} FileResource
 @return PRMergeStatus
 @see {@link getPrJsonByUserBranch}
-@todo: A github search shows that filename is never being passed in as an argument
-to this function. I think it would be best to eliminate it. tc-create-app, gateway-edit, 
-and gateway-admin are all calling this function so we should test to make sure nothing
-breaks there.
-*/
+*/  
 export const checkMergeDefaultIntoUserBranch = ({
-  server, owner, repo, userBranch, prDescription, tokenid, filename,
+  server, owner, repo, userBranch, prDescription, tokenid, 
+  /**
+  @todo: A github search shows that filename is never being passed in as an argument
+  to this function. I think it would be best to eliminate it. tc-create-app, gateway-edit, 
+  and gateway-admin are all calling this function so we should test to make sure nothing
+  breaks there.
+  */
+  filename,
 }) =>
   getPrJsonByUserBranch({server, owner, repo, userBranch, prBody: prDescription, tokenid})
   .then(({mergeable, head, base, merge_base, url}) => checkFilenameUpdateable({server, owner, repo, prJson: {base, merge_base}, filename})
