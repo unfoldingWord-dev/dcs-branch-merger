@@ -10,7 +10,6 @@ import { apiPath } from "./constants"
 /**
 @typedef {<R,A>(r : R) => Promise<A>} PRPromise<R,A>
 
-
 The PRPromise API encapsulates expressions that can make API requests
 to gitea and provides ways to combine theses expressions.
 
@@ -19,7 +18,39 @@ repo, owner, etc) that is "prop drilled". This API does the
 "prop-drilling" for us so users don't have to pass variables around
 - including within async code.
 
-This API accomplishes this by conceptually defining the PRPromise type:
+# Origins Of PRPromise
+
+Consider the following functions and their types defined in `common.js`:
+
+```
+//{server, owner, repo, prId} -> Promise<A>
+export const getPrJson = ({server, owner, repo, prId}) => {... }
+
+//{server, tokenid} -> Promise<B>
+export async function getUserJson({ server, tokenid }) { ... }
+
+//{server, tokenid} -> Promise<C>
+export async function getUsername({ server, tokenid }) { ... }
+
+//{server, owner, repo, prJson : {base : { sha : string}, merge_base : string}, filename : string} -> Promise<D>
+export const checkFilenameUpdateable = ({ server, owner, repo, prJson: {base: {sha: base}, merge_base}, filename }) => ... 
+```
+Notice that each of these function's follow the same pattern in their types:
+
+```
+//{server, owner, repo, prId} -> Promise<A>
+//{server, tokenid} -> Promise<B>
+//{server, tokenid} -> Promise<B>
+//{server, owner, repo, prJson : {base : { sha : string}, merge_base : string}, filename : string} -> Promise<D>
+```
+which is `r -> Promise<A>` where `r` is some readonly data and `A`
+is the type of some return value (such as a JSON object).
+
+# The Definition Of PRPromise
+
+The PRPromise<R,A> type encapsulates these types to handle the
+passing around of the config data, modifying the config data, and
+how to combine/modify the promises returned by these functions.
 
 //R is the type of the readonly config (R for "readonly") 
 //A is the type of data produced by PRPromise computations
@@ -31,16 +62,50 @@ for example, a value of type
 PRPromise<{server : string, repo : string}, IssueNumber>
 ``` 
 is an expression that has `{server : string, repo : string}` as
-readonly config and produces, asynchronously, an `IssueNumber`.
+readonly data and produces, asynchronously, an `IssueNumber`.
 
-NOTE: Other forms of PRPromise<R,A> include:
+NOTE: Any function that has the type `r -> Promise<A>` _is_ a
+PRPromise<R,A> regardless of the syntax used to define that function.
+This includes:
 
 ```
-<R,A> function(r : R) : Promise<A>
-<R,A> async function(r : R) : A 
+const function foo = (r : R) => ...
+function foo(r : R) { ... }
+async function foo(r : R) { ... } 
 ```
-@todo Add examples like 'getPRJson'
-@todo Show an expanded example
+
+# Expanding A PRPromise Expression
+
+The power of the PRPromise API can be seen in the following example.
+Below defines a function who's purpose is to get a PR by an ID, if
+that fails then get the PR by incrementing that ID, if both fail
+then produce a null value.
+
+Using this API we could write:
+
+```
+getPROrNextPR = (prId) =>
+  or
+  ( repoGetJSON(`/pulls/${prId}`)
+  , or(repoGetJSON(`/pulls/${prId+1}`), pure(null))
+  )
+```
+If we substitute the definitions for `or`, `repoGetJSON`, and `pure`
+and simplify the code a bit we arrive at (we leave the substitution
+as an exercise to the reader):
+
+```
+getPROrNextPR = ({server, apiPath, owner, repo, prId}) =>
+  fetch(`${server}/${apiPath}/repos/${owner}/${repo}/pulls/${prId}`)
+  .then(r => r.json())
+  .catch(_ => fetch(`${server}/${apiPath}/repos/${owner}/${repo}/pulls/${prId+1}`)
+    .then(r => r.json())
+    .catch(_ => null)
+  )
+```
+The difference is one reads closer to the intention of the program
+and the other reads closer to the "under-the-hood" definition of
+the program.
 
 */
 
