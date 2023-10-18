@@ -212,8 +212,8 @@ export const forEveryFirst = (f, xs) => {
 
 /**
 @function
-@description When the given predicate on the readonly config returns true produce the
-given value
+@description When the given predicate on the readonly config returns
+true produce the given value
 @param {<R>(r : R) => boolean} f
 @param {A} a
 @returns {PRPromise<R,A>}
@@ -223,25 +223,76 @@ export const when = (f, a) => (r) =>
 
 /**
 @function
-@description
+@description Extend the readonly (assuming it's an object) with another object.
+
+For example 
+
+```
+getPrById : PRPromise<{prId : number, server : string}, object> = ({prId, server}) =>
+
+getPrById2 : PRPRomise<{server : string}, object>
+  = extendConfig({prId : 2}, getPrById)` 
+  = (r) => getPrById({...r, prId: 2})
+```
+NOTE: 
+  - the 2 definitions for `getPrById2` are identical:
+  - the `R` type in `getPRById2` lacks the `prId` key that `getPrById`
+  has as this value is hardcoded.
+
+
 @param {Object} c object to extend the PRPromise config with
 @param {PRPromise<Object,A>} p
 @returns {PRPromise<Object,A>}
-@todo add an example
 */
 export const extendConfig = (c, p) => (r) => p({...r, ...c})
 
 /**
 @typedef {string} URLPath
-The path for an HTTP url
+The path for an HTTP url. NOTE: _do not include a forward slash
+prefix, e.g '/foo/bar' should be 'foo/bar')
+@example 'foo/bar/baz'
+
+*/
+
+/**
+@typedef {string} HTTPUrl
+An HTTP Url. 
+@example 'https://www.foobar.com/baz'
+*/
+
+/**
+@typedef {string} Owner
+The owner of a repository. 
+@example 'unfoldingWord'
+*/
+
+/**
+@typedef {string} RepoName
+The name of a repository
+@example 'en_tn'
+*/
+
+/**
+@typedef {object} RepoInfo
+@property {HTTPUrl} server
+@property {Owner} owner
+@property {RepoName} repo
 */
 
 /**
 @function
-@todo Finish the description
-@description GET JSON from the repository for a file at a
-@param {URLPath}
+@description GET JSON from the repository for the given path. The
+URL used to make the request is:
+
+```
+${server}/${apiPath}/repos/${owner}/${repo}/${path}`. 
+```
+Where `apiPath` is defined in {@link ./constants.js}
+
+@param {URLPath} path
 @returns {PRPromise<RepoInfo, JSON>}
+@see {@link apiPath}
+@todo consider using a proper URL library
 */
 export const repoGetJSON = (path) => ({server, owner, repo}) => 
   fetch(`${server}/${apiPath}/repos/${owner}/${repo}/${path}`)
