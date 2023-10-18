@@ -128,17 +128,16 @@ export const pure = (a) => (_) => Promise.resolve(a)
 
 /**
 @function
-@description Like Promise.then but for PRPromise. Note this function
+@description Like Promise.then but for PRPromise. NOTE: this function
 allows for multiple then functions to be used that are then chained
 together. For example:
 
 ```
 then(x, f, g) <==> then(x, y => then(f(y), g)) <==> then(x, chain(f,g))
 ```
-@param {(pr : PRPromise<R,A0>} pr 
-@todo fns is an array of functions... indicate this
-@param {<An,An1>(a : An) => PRPromise<R,An1>} fns 
-@returns {PRPromise<R,An1>}
+@param {pr : PRPromise<R,A>} pr 
+@param {Array<<B,C>(b : B) => PRPromise<R,C>>} fns An array of functions that are composed together. 
+@returns {PRPromise<R,C>}
 */
 export const then = (pr, ...fns) => r => 
   fns.reduce((accPr, f) => accPr.then(b => f(b)(r)), pr(r))
@@ -153,8 +152,7 @@ export const empty = () => Promise.reject()
 
 /**
 @function
-@todo Clean up this english
-@description Combine 2 PRPromises with or-like logic. That if the first one fails use the second one.
+@description Combine 2 PRPromises with or-like logic. If the first one fails then use the results of the second one.
 @param {PRPromise<R,A>} pr1
 @param {PRPromise<R,A>} pr2
 @returns {PRPromise<R,A>}
@@ -164,11 +162,35 @@ export const or = (pr1, pr2) => (r) =>
 
 /**
 @function
-@description Chain two functions that return PRPromises together. This is primarily for convenience.
-You can accomplish the same thing using `a => then(f(a), g)`
+@description Compose two functions that return PRPromises together.
+This is function composition but for functions that return a PRPromise.
+
+Consider normal function composition:
+```
+  h = (x) => g(f(x))
+|---------|
+| f    g  V
+a -> b -> c
+```
+where `h` is the composition of `f` and `g`.
+
+Now consider how to define `h` if we make `f` and `g` return their
+values wrapped in a PRPromise. That is `a -> b` becomes 
+`a -> PRPromise<b>` (or, short-handedly, `a ~> b`).
+
+```
+  h = chain(f, g)
+|~~~~~~~~~|
+| f    g  V
+a ~> b ~> c
+```
+Here our composition includes handling the values wrapped in
+PRPromises. This is what `chain` does. 
+
+NOTE: You can accomplish the same thing using `a => then(f(a), g)`
+
 @param {<R,A,B>(a : A) => PRPromise<R,B>} f
 @param {<R,B,C>(b : B) => PRPromise<R,C>} g
-@todo draw a diagram of what's going on
 */
 export const chain = (f,g) => (a) => then(f(a), g)
 
