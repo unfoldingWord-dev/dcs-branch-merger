@@ -102,15 +102,21 @@ in between calls.
 */
 import { getPrJsonByUserBranch } from './common'
 
-export const getPrJsonWithNonCheckingStatus = async (x) => { 
+export const getPrJsonWithNonCheckingStatus = (x) =>
+  runRecheckWhen(({status}) => status === "CHECKING", () => getPrJsonByUserBranch(x))
+
+const runRecheckWhen = async (predicate, computation) => {
   const maxRecheckCount = 5; 
   let n = 0;
-  const prJson = { status: null };
-
   do {
-    prJson = await getPrJsonByUserBranch(x)
+    r = await computation()
     n++;
-  } while (n < maxRecheckCount && prJson.status === "CHECKING")
+  } while (n < maxRecheckCount && predicate(r))
 
-  return prJson
-} 
+  return r
+}
+
+/**
+
+*/
+export const test = () => {  }
