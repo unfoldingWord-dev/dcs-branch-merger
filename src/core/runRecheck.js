@@ -29,6 +29,7 @@ export const runRecheckWhen = async ({maxRecheckCount, predicate, computation}) 
   do {
     result = await computation(runCount)
     runCount++;
+    /** @todo This will run one time extra than maxRecheckCount (if 5, will run 6 times) */
   } while (runCount <= maxRecheckCount && predicate(result))
 
   return result
