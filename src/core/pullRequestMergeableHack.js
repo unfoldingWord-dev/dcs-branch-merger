@@ -101,11 +101,11 @@ in between calls.
 
 */
 import { getPrJsonByUserBranch } from './common'
-import { runRecheckWhen } from './runRecheck'
+import { runRetryWhen } from './runRecheck'
 
 export const getPrJsonWithNonCheckingStatus = (x) =>
-  runRecheckWhen
-    ({ maxRecheckCount : 5
+  runRetryWhen
+    ({ maxRetryCount : 5
     , predicate : prHasInvalidMergeableStatus
     , computation : () => getPrJsonByUserBranch(x)
     })
