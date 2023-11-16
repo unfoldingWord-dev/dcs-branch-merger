@@ -101,7 +101,7 @@ in between calls.
 
 */
 import { getPrJsonByUserBranch } from './common'
-import { runRetryWhen } from './runRecheck'
+import { runRetryWhen } from './runRetryWhen'
 
 export const getPrJsonWithNonCheckingStatus = (x) =>
   runRetryWhen
