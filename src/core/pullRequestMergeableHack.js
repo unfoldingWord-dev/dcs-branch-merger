@@ -108,7 +108,7 @@ export const getPrJsonWithNonCheckingStatus = async (x) => {
   const prJson = { status: null };
 
   do {
-    prJson = getPrJsonByUserBranch(x)
+    prJson = await getPrJsonByUserBranch(x)
     n++;
   } while (n < maxRecheckCount && prJson.status === "CHECKING")
 
