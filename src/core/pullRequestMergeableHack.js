@@ -109,6 +109,5 @@ export const getPrJsonWithNonCheckingStatus = (x) =>
     , predicate : prHasInvalidMergeableStatus
     , computation : () => getPrJsonByUserBranch(x)
     })
-  .then(({result}) => result)  
 
 const prHasInvalidMergeableStatus = ({status}) => status === "CHECKING" 

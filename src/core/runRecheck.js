@@ -25,6 +25,7 @@ predicate is true or the max number or retries has been reached.
 */
 export const runRecheckWhen = async ({maxRecheckCount, predicate, computation}) => {
   let runCount = 0;
+  let result = {};
   do {
     result = await computation(runCount)
     runCount++;
