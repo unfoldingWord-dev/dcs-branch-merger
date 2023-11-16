@@ -1,4 +1,4 @@
-import { getPrJsonByUserBranch } from './common'
+import { getPrJsonWithNonCheckingStatus } from './pullRequestMergeableHack'
 
 export async function checkMergeUserIntoDefaultBranch({
   server, owner, repo, userBranch, prDescription, tokenid,
@@ -13,7 +13,7 @@ export async function checkMergeUserIntoDefaultBranch({
   };
   let prJson = {}
   try {
-    prJson = await getPrJsonByUserBranch( {server, owner, repo, userBranch, prBody: prDescription, tokenid} )
+    prJson = await getPrJsonWithNonCheckingStatus( {server, owner, repo, userBranch, prBody: prDescription, tokenid} )
   } catch (e) {
     returnObject.error = true
     returnObject.message = e.message
