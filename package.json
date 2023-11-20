@@ -6,7 +6,7 @@
   "homepage": "https://unfoldingword.github.io/dcs-branch-merger/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/unfoldingWord/dcs-branch-merger"
+    "url": "git+https://github.com/unfoldingWord/dcs-branch-merger.git"
   },
   "license": "MIT",
   "engines": {
